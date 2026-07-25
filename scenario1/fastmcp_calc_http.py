@@ -75,4 +75,4 @@ def divide(a: float, b: float) -> float:
     return a/b
 
 if __name__ == '__main__':
-    mcp.run() # STDIO by default
+    mcp.run(transport='http', host='localhost', port=8082) # STDIO by default
