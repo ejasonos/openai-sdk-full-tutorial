@@ -5,6 +5,9 @@ To run the fastmcp as HTTP, specify the transport type in the mcp.run() method e
 if __name__ == '__main__':
     mcp.run(transport='http', host='localhost', port=8082) # STDIO by default
 
+Then run:
+python fastmcp_calc_http.py
+npx @modelcontextprotocol/inspector python fastmcp_calc.py
 '''
 # Linraries
 from fastmcp import FastMCP 
