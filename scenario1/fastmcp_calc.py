@@ -4,7 +4,13 @@ from fastmcp import FastMCP
 mcp = FastMCP(name='Calculator')
 
 # Addition tool
-mcp.tool()
+@mcp.tool(
+    name='addition tool',
+    description='''Add the two parameters
+        args: a(float): The first parameter
+              b(float): The second parameter
+        return a+b: the sum of the two parameters
+        ''')
 def add(a: float, b: float):
     '''Add the two parameters
     args: a(float): The first parameter
@@ -14,16 +20,28 @@ def add(a: float, b: float):
     return a+b
 
 # Subtraction tool
-mcp.tool()
+@mcp.tool(
+    name='subtraction tool',
+    description='''Subtract the second parameter from the first
+        args: a(float): The first parameter
+              b(float): The second parameter
+        return a-b: the subtraction of parameter b from parameter a
+        ''')
 def subtract(a: float, b: float):
     '''Subtract parameter b from a
     args: a(float): The first parameter
           b(float): The second parameter
-    return a+b: the subtraction of parameter b from parameter a
+    return a-b: the subtraction of parameter b from parameter a
     '''
     return a-b
 
-mcp.tool()
+@mcp.tool(
+    name='multiply tool',
+    description='''Multiply the two parameters
+        args: a(float): The first parameter
+              b(float): The second parameter
+        return a*b: the product of the two parameters
+        ''')
 def multiply(a: float, b: float) -> float:
     '''Multiply two numbers
     args: a (float): The first number
@@ -33,7 +51,13 @@ def multiply(a: float, b: float) -> float:
     return a*b
 
 # Division tool
-mcp.tool()
+@mcp.tool(
+    name='division tool',
+    description='''Divide the first parameter by the second
+        args: a(float): The first parameter
+              b(float): The second parameter
+        return a/b: the division of the two parameters
+        ''')
 def divide(a: float, b: float) -> float:
     '''Divide two numbers
     args: a (float): The first number
@@ -41,3 +65,6 @@ def divide(a: float, b: float) -> float:
     returns: float: the division of the two numbers
     '''
     return a/b
+
+if __name__ == '__main__':
+    mcp.run() # STDIO by default
