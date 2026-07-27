@@ -1,4 +1,6 @@
 '''
+pip install fastmcp
+
 To run the fastmcp as STDIO (which is default transport type), just run the python file
 python fastmcp_calc.py
 To run the fastmcp as HTTP, specify the transport type in the mcp.run() method e.g

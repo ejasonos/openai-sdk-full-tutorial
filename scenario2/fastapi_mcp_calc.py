@@ -1,5 +1,7 @@
 # HTTP
 '''
+pip install fastapi fastapi_mcp uvicorn
+
 To run the fastapi you only need
 if __name__ == '__main__':
     import uvicorn
