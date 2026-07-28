@@ -18,7 +18,7 @@ mcp = FastMCP(name='Calculator')
 
 # Addition tool
 @mcp.tool(
-    name='addition tool',
+    name='addition_tool',
     description='''Add the two parameters
         args: a(float): The first parameter
               b(float): The second parameter
@@ -34,7 +34,7 @@ def add(a: float, b: float):
 
 # Subtraction tool
 @mcp.tool(
-    name='subtraction tool',
+    name='subtraction_tool',
     description='''Subtract the second parameter from the first
         args: a(float): The first parameter
               b(float): The second parameter
@@ -49,7 +49,7 @@ def subtract(a: float, b: float):
     return a-b
 
 @mcp.tool(
-    name='multiply tool',
+    name='multiply_tool',
     description='''Multiply the two parameters
         args: a(float): The first parameter
               b(float): The second parameter
@@ -65,7 +65,7 @@ def multiply(a: float, b: float) -> float:
 
 # Division tool
 @mcp.tool(
-    name='division tool',
+    name='division_tool',
     description='''Divide the first parameter by the second
         args: a(float): The first parameter
               b(float): The second parameter

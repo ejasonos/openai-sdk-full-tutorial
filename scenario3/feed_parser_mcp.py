@@ -18,5 +18,24 @@ def feed_news_search(query: str, max_results: int=3):
             break
     return results or [{'message': 'No results found'}]
 
+@mcp.tool()
+def fcc_youtube_search(query: str, max_results: int=3):
+    """Search FreeCodeCamp Youtube channel via RSS by title"""
+    feed = feedparser.parse('https://www.youtube.com/feeds/videos.xml?channel_id=')
+    results = []
+    query_lower = query.lower()
+    for entry in feed.entries:
+        title = entry.get('title', '')
+        if query_lower in title.lower():
+            results.append({'title':title, 'url': entry.get('link', '')})
+        if len(results) >= max_results:
+            break
+    return results or [{'message': 'No videos found'}]
+
+@mcp.tool()
+def fcc_secret_message():
+    """Returns a secret message of FreeCodeCamp"""
+    return 'Keep exploring and happy coding!'
+
 if __name__ == '__main__':
     mcp.run() # STDIO
