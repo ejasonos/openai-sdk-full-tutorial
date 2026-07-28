@@ -21,7 +21,8 @@ def feed_news_search(query: str, max_results: int=3):
 @mcp.tool()
 def fcc_youtube_search(query: str, max_results: int=3):
     """Search FreeCodeCamp Youtube channel via RSS by title"""
-    feed = feedparser.parse('https://www.youtube.com/feeds/videos.xml?channel_id=')
+    # This method of Data API is deprecated
+    feed = feedparser.parse('https://www.youtube.com/feeds/videos.xml?channel_id=UC8butISFwT-Wl7EV0hUK0BQ')
     results = []
     query_lower = query.lower()
     for entry in feed.entries:
