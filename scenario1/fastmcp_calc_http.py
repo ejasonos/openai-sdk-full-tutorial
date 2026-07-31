@@ -10,6 +10,12 @@ if __name__ == '__main__':
 Then run:
 python fastmcp_calc_http.py
 npx @modelcontextprotocol/inspector python fastmcp_calc_http.py
+
+
+In order to run the http server on VSCODE SUCCESSFULLY:
+1. Setup the mcp.json correctly
+2. Add server 'http://localhost:port/mcp' and (no unique identifier)
+3. Start server
 '''
 # Linraries
 from fastmcp import FastMCP 
@@ -80,4 +86,4 @@ def divide(a: float, b: float) -> float:
     return a/b
 
 if __name__ == '__main__':
-    mcp.run(transport='http', host='localhost', port=8082) # STDIO by default
+    mcp.run(transport='http', host='127.0.0.1', port=8082) # STDIO by default
