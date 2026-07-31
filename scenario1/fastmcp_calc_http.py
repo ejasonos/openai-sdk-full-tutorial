@@ -15,7 +15,8 @@ npx @modelcontextprotocol/inspector python fastmcp_calc_http.py
 In order to run the http server on VSCODE SUCCESSFULLY:
 1. Setup the mcp.json correctly
 2. Add server 'http://localhost:port/mcp' and (no unique identifier)
-3. Start server
+3. Run the file using python command
+4. Start the mcp server in the extensions menu
 '''
 # Linraries
 from fastmcp import FastMCP 
