@@ -23,16 +23,14 @@
    - Memory
    - Multi-Agent Systems
 
-5. Claude Ecosystem + MCP
-
-6. Production AI Infrastructure
+5. Production AI Infrastructure
 
 ---
 
-## 2026 Engineering Progression
+## Engineering Progression
 
 SDK Fundamentals
-→ Retrieval & Tool Use
+→ Retrieval & Tool Us
 → Manual Agents
 → Agent SDKs
 → MCP Ecosystem

@@ -7,6 +7,12 @@ Workstation:
 Data sub, motivation and clarity of plan
 Goal:
 Improve visibility by advertising and building into a mobile app.
+
+In order to run this script successfully:
+1. Start the docker chromadb image and bind it to a port: docker run -p 8000:8000 chromadb/chroma
+2. Start the mysqld.exe service
+3. Connect only first time (sometimes) to the internet in order to prevent huggingface.co errors
+4. Start the script: node rag.js
 */
 // Create variables for data that will be fetched from MySQL
 
@@ -19,7 +25,6 @@ dotenv.config()
 
 const db = await mysql.createConnection({
     port: 3307,
-    host: 'localhost',
     user: 'root',
     password: 'Favoure246@',
     database: 'ragdb'
@@ -67,9 +72,10 @@ async function createEmbedding(text) {
 import { ChromaClient } from 'chromadb'
 const chroma = new ChromaClient({
     host: 'localhost',
-    port: 8000,
+    port: 8000
 })
 
+// console.log(await chroma.heartbeat())
 // 1. Retrieve documents from MySQL
 const [documents] = await db.query('SELECT id, title, content FROM company')
 
@@ -105,7 +111,7 @@ for (const doc of processedDocs) {
 }
 
 // 5. Perform vector search
-const prompt = 'What e-commerce platforms do we partner with'
+const prompt = 'What e-commerce platforms do we partner with and when was the company founded or who is it"s founder'
 const queryEmbedding = await createEmbedding(prompt)
 
 const results = await collection.query({
@@ -125,13 +131,21 @@ const openai = new OpenAI({
 })
 
 // feed indexed data for context into model
-const response = await openai.chat.completions.create({
-    model: 'meta/llama-3.1-8b-instruct',
+const stream = await openai.chat.completions.create({
+    model: 'llama3.1:8b',
     messages: [
         {role: "system", content: "You are Mall Titan E-commerce assistant that answers user questions based on the context provided, else return 'I'm an E-commerce assistant. What else can I help you with'. Context: "+results.documents},
         {role: "user", content: prompt}
-    ]
+    ],
+    stream: true
 })
 
 // format model response
-console.log('Model response:', response.choices[0].message.content)
+for await (const chunk of stream) {
+    const delta = chunk.choices[0].delta.content
+    if (delta) {
+        process.stdout.write(delta)
+    }
+}
+
+// console.log('Model response:', response.choices[0].message.content)

@@ -161,13 +161,13 @@ const messages = [
 const rl = readline.createInterface({
     input: process.stdin, output: process.stdout, prompt: "User: "
 })
-
+const model = 'ev-gpt2'
 rl.prompt()
 rl.on('line', async (line) => {
     const prompt = line.toLowerCase().trim()
 
     const firstResponse = await openai.chat.completions.create({
-        model: "meta/llama-3.1-8b-instruct",
+        model: model,
         messages: [
             ...messages,
             {role: "user", content: prompt}
