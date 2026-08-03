@@ -31,62 +31,86 @@ export const chroma = new ChromaClient({
   port: 8000,
 });
 // Chromadb collection
-const collection = await chroma.createCollection({
-  name: "examPrepAgent",
-  embeddingFunction: createEmbedding,
-});
+// const collection = await chroma.createCollection({
+//   name: "examPrepAgent",
+//   embeddingFunction: createEmbedding,
+// });
+// await chroma.deleteCollection({
+//   name: "exammPrepAgent"
+// })
 const collection = await chroma.getCollection({
   name: "examPrepAgent",
   embeddingFunction: createEmbedding,
 });
+
 // For each document, create embeddings and add to Chroma
 // Directory containing your docs
 const docsDir = "./exam-prep-agent/pdf/";
 // Read all files from company-files directory
 const files = await fs.readdirSync(docsDir);
 
-for (const file of files) {
-  if (file.endsWith(".pdf")) {
-    const filePath = path.join(docsDir, file);
-    let way = `.\\` + `${filePath}`;
-    let switchSlash = way.replaceAll("\\", "/");
-    console.log(switchSlash);
-    let buffer = fs.readFileSync(switchSlash);
-    const parser = new PDFParse({ data: buffer });
-    const result = await parser.getText();
-    const pdfTextResult = result.text;
-    const pdfTextResultInfo = await parser.getInfo();
-    await parser.destroy();
+// for (const file of files) {
+//   if (file.endsWith(".pdf")) {
+//     const filePath = path.join(docsDir, file);
+//     let way = `.\\` + `${filePath}`;
+//     let switchSlash = way.replaceAll("\\", "/");
+//     console.log(switchSlash);
+//     let buffer = fs.readFileSync(switchSlash);
+//     const parser = new PDFParse({ data: buffer });
+//     const result = await parser.getText();
+//     const pdfTextResult = result.text;
+//     const pdfTextResultInfo = await parser.getInfo();
+//     await parser.destroy();
 
-    // Define our chunk size
-    const chunk_size = 1000;
-    console.log(
-      `chunck size: ${chunk_size}; pdfTextResult.length: ${pdfTextResult.length}`,
-    );
-    for (let i = 0; i < pdfTextResult.length; i += chunk_size) {
-      const chunk = pdfTextResult.slice(
-        i,
-        Math.min(i + chunk_size, pdfTextResult.length),
-      );
-      // Generate embedding
-      await collection.add({
-        ids: `pdf-${randomUUID()}`,
-        embeddings: [await createEmbedding(pdfTextResult)],
-        documents: [pdfTextResult],
-        metadatas: [
-          {
-            title: pdfTextResultInfo.info?.Title || "",
-            author: pdfTextResultInfo.info?.Author || "",
-            totalPages: pdfTextResultInfo.info?.total || "",
-          },
-        ],
-      });
-    }
-  }
+//     // Define our chunk size
+//     const chunk_size = 1000;
+//     console.log(
+//       `chunck size: ${chunk_size}; pdfTextResult.length: ${pdfTextResult.length}`,
+//     );
+//     var n = 0;
+//     for (let i = 0; i < pdfTextResult.length; i += chunk_size) {
+//       console.log(
+//         "Processing chunk for file: " +
+//           filePath +
+//           " +" +
+//           `${n}/${pdfTextResult.length / 1000}`,
+//       );
+//       const chunk = pdfTextResult.slice(
+//         i,
+//         Math.min(i + chunk_size, pdfTextResult.length),
+//       );
+//       // Skip empty chunks
+//       if (!chunk.trim()) continue;
+//       // Generate embedding
+//       await collection.add({
+//         ids: [`${file}-${i + 1}`],
+//         embeddings: [await createEmbedding(chunk)],
+//         documents: [chunk],
+//         metadatas: [
+//           {
+//             title: pdfTextResultInfo.info?.Title || "",
+//             author: pdfTextResultInfo.info?.Author || "",
+//             totalPages: pdfTextResultInfo.info?.total || "",
+//           },
+//         ],
+//       });
+//       n += 1;
+//     }
+//   }
+// }
+
+// 5. Perform vector search
+async function getVectorResults(prompt) {
+  const queryEmbedding = await createEmbedding(prompt);
+  const vectorSearchResults = await collection.query({
+    queryEmbeddings: [queryEmbedding],
+    nResults: 5,
+  });
+  return vectorSearchResults;
 }
 
 // Setup Openai sdk
-const client = new OpenAI({
+const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
   baseURL: process.env.OPENAI_BASE_URL,
 });
@@ -130,8 +154,7 @@ const examPrepAgent = async () => {
         {
           id: "sys_000",
           role: "system",
-          content:
-            "You are my Nigerian, University of Benin, Computer Engineering Lecturer. Your name is Engineer Omosigho. And your course is CPE556: Computer Graphics. Don't be playful or informal.",
+          content: `You are my Nigerian, University of Benin, Computer Engineering Lecturer. Your name is Engineer Omosigho. And your course is CPE512: Digital Signal Processing. Don't be playful or informal. You answer majorly from the context provided because it is a vector db search through textbooks for the course, however you may simplify the context or just teach the context;`,
         },
       ],
     },
@@ -184,10 +207,15 @@ const examPrepAgent = async () => {
         //   await `user_id: ${user_id}; conv_id: ${conv_id}; message_id: ${message_id}`,
         // );
 
-        const stream = await client.chat.completions.create({
+        const stream = await openai.chat.completions.create({
           model: model,
           messages: [
             { id: message_id, role: "user", content: prompt },
+            {
+              id: message_id,
+              role: "assistant",
+              content: `Context: ${await getVectorResults(prompt)}`,
+            },
             ...userDb.conversation.messages,
           ],
           stream: true,
